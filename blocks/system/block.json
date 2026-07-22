@@ -1,0 +1,1 @@
+{"apiVersion":3,"name":"cyberfort-ai-register/system","title":"AI System","category":"widgets","textdomain":"cyberfort-ai-register","attributes":{"reference":{"type":"string"},"language":{"type":"string","default":"auto"}}}

@@ -1,0 +1,2 @@
+<?php
+defined( 'WP_UNINSTALL_PLUGIN' ) || exit; if ( ! get_option( 'cfair_delete_data' ) ) return; global $wpdb; foreach ( [ 'cfair_server_url', 'cfair_api_key', 'cfair_environment', 'cfair_api_version', 'cfair_language', 'cfair_cache_duration', 'cfair_stale_retention', 'cfair_base_slug', 'cfair_delete_data', 'cfair_schema_version', 'cfair_last_error' ] as $option ) delete_option( $option ); $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_cfair_%' OR option_name LIKE 'cfair_%_lkg'" );
