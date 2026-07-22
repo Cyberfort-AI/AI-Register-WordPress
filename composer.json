@@ -1,0 +1,1 @@
+{"name":"cyberfort/ai-register-wordpress","description":"Cyberfort AI Register WordPress plugin","type":"wordpress-plugin","require":{"php":"^8.1"},"autoload":{"psr-4":{"Cyberfort\\AIRegister\\":"includes/"}}}

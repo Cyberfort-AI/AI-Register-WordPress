@@ -1,0 +1,3 @@
+<?php
+namespace Cyberfort\AIRegister; defined( 'ABSPATH' ) || exit;
+class Blocks { public function init(): void { add_action( 'init', [ $this, 'register' ] ); } public function register(): void { foreach ( [ 'register', 'system' ] as $block ) { $path = CFAIR_PATH . 'blocks/' . $block; if ( function_exists( 'register_block_type' ) && is_readable( $path . '/block.json' ) ) register_block_type( $path, [ 'render_callback' => 'register' === $block ? fn( $a ) => ( new Renderer() )->register( $a ) : fn( $a ) => ( new Renderer() )->system( sanitize_text_field( $a['reference'] ?? '' ), $a['language'] ?? 'auto' ) ] ); } } }

@@ -1,0 +1,1 @@
+{"name":"cyberfort-ai-register","version":"1.0.0","private":true,"scripts":{"lint":"find . -name '*.php' -not -path './.git/*' -print0 | xargs -0 -n1 php -l"}}
