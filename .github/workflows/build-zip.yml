@@ -1,0 +1,71 @@
+name: Build plugin ZIP
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Read plugin version
+        id: version
+        shell: bash
+        run: |
+          VERSION=$(grep -m1 '^ \* Version:' cyberfort-ai-register.php | sed -E 's/.*Version:[[:space:]]*([^[:space:]]+).*/\1/')
+          if [ -z "$VERSION" ]; then
+            echo "Could not determine plugin version" >&2
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Validate PHP syntax
+        shell: bash
+        run: find . -name '*.php' -not -path './.git/*' -print0 | xargs -0 -n1 php -l
+
+      - name: Assemble plugin directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf build
+          mkdir -p build/cyberfort-ai-register
+          rsync -a ./ build/cyberfort-ai-register/ \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='build/' \
+            --exclude='tests/' \
+            --exclude='vendor/' \
+            --exclude='node_modules/' \
+            --exclude='.gitignore' \
+            --exclude='composer.lock' \
+            --exclude='package-lock.json' \
+            --exclude='phpunit.xml.dist' \
+            --exclude='phpcs.xml.dist'
+
+      - name: Create ZIP package
+        shell: bash
+        run: |
+          cd build
+          zip -r "cyberfort-ai-register-${{ steps.version.outputs.version }}.zip" cyberfort-ai-register
+          sha256sum "cyberfort-ai-register-${{ steps.version.outputs.version }}.zip" > "cyberfort-ai-register-${{ steps.version.outputs.version }}.zip.sha256"
+
+      - name: Upload installable plugin
+        uses: actions/upload-artifact@v4
+        with:
+          name: cyberfort-ai-register-${{ steps.version.outputs.version }}
+          path: |
+            build/cyberfort-ai-register-${{ steps.version.outputs.version }}.zip
+            build/cyberfort-ai-register-${{ steps.version.outputs.version }}.zip.sha256
+          if-no-files-found: error
+          retention-days: 90
