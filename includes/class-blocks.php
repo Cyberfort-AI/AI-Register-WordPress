@@ -1,3 +1,34 @@
 <?php
-namespace Cyberfort\AIRegister; defined( 'ABSPATH' ) || exit;
-class Blocks { public function init(): void { add_action( 'init', [ $this, 'register' ] ); } public function register(): void { foreach ( [ 'register', 'system' ] as $block ) { $path = CFAIR_PATH . 'blocks/' . $block; if ( function_exists( 'register_block_type' ) && is_readable( $path . '/block.json' ) ) register_block_type( $path, [ 'render_callback' => 'register' === $block ? fn( $a ) => ( new Renderer() )->register( $a ) : fn( $a ) => ( new Renderer() )->system( sanitize_text_field( $a['reference'] ?? '' ), $a['language'] ?? 'auto' ) ] ); } } }
+namespace Cyberfort\AIRegister;
+
+defined( 'ABSPATH' ) || exit;
+
+class Blocks {
+    public function init(): void {
+        add_action( 'init', [ $this, 'register' ] );
+        add_action( 'enqueue_block_editor_assets', [ $this, 'editor_assets' ] );
+    }
+
+    public function register(): void {
+        if ( ! function_exists( 'register_block_type' ) ) return;
+        register_block_type( CFAIR_PATH . 'blocks/register', [
+            'render_callback' => static fn( array $attributes ): string => ( new Renderer() )->register( $attributes ),
+        ] );
+        register_block_type( CFAIR_PATH . 'blocks/system', [
+            'render_callback' => static fn( array $attributes ): string => ( new Renderer() )->system(
+                sanitize_text_field( (string) ( $attributes['reference'] ?? '' ) ),
+                in_array( $attributes['language'] ?? 'auto', [ 'auto', 'lv', 'en' ], true ) ? $attributes['language'] : 'auto'
+            ),
+        ] );
+    }
+
+    public function editor_assets(): void {
+        wp_enqueue_script(
+            'cfair-blocks',
+            CFAIR_URL . 'assets/js/blocks.js',
+            [ 'wp-blocks', 'wp-element', 'wp-components', 'wp-block-editor', 'wp-i18n' ],
+            CFAIR_VERSION,
+            true
+        );
+    }
+}
