@@ -4,6 +4,8 @@ Cyberfort AI Register for WordPress is a read-only WordPress presentation layer 
 
 The plugin does **not** copy the AI Register database into WordPress and does not expose internal evidence, users, FRIA records, documents or administration functions. WordPress sends authenticated server-side requests to the Cyberfort AI Register public connector API and renders the approved public projection inside the active WordPress theme.
 
+![AI Register public register](Img_AI_Register_testa_pasvaldiba.jpg)
+
 ## Status
 
 Version `1.0.0` provides the WordPress connector foundation. It requires a compatible Cyberfort AI Register server exposing the `/api/public/v1` connector endpoints and a tenant-specific connector API key.
